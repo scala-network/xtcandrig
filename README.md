@@ -1,6 +1,6 @@
-# XTLAndRig
+# XTLandRig
 
-XTLAndRig is a high performance Stellite (XTL) CPU miner, with official support for Android.
+XTLandRig is a high performance Stellite (XTL) CPU miner, with official support for Android.
 
 <img src="https://i.imgur.com/MIAgTEd.png" width="619" >
 
