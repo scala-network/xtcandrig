@@ -1,21 +1,18 @@
-# XMRig
-XMRig is a high performance Monero (XMR) CPU miner, with official support for Windows.
-Originally based on cpuminer-multi with heavy optimizations/rewrites and removing a lot of legacy code, since version 1.0.0 completely rewritten from scratch on C++.
+# XTLRig
 
-* This is the **CPU-mining** version, there is also a [NVIDIA GPU version](https://github.com/xmrig/xmrig-nvidia) and [AMD GPU version]( https://github.com/xmrig/xmrig-amd).
-* [Roadmap](https://github.com/xmrig/xmrig/issues/106) for next releases.
+XTLRig is a high performance Stellite (XTL) CPU miner, with official support for Windows.
 
-<img src="http://i.imgur.com/OKZRVDh.png" width="619" >
+<img src="https://i.imgur.com/MIAgTEd.png" width="619" >
 
 #### Table of contents
 * [Features](#features)
 * [Download](#download)
 * [Usage](#usage)
 * [Algorithm variations](#algorithm-variations)
-* [Build](https://github.com/xmrig/xmrig/wiki/Build)
 * [Common Issues](#common-issues)
 * [Other information](#other-information)
 * [Donations](#donations)
+* [Release checksums](#release-checksums)
 * [Contacts](#contacts)
 
 ## Features
@@ -26,27 +23,16 @@ Originally based on cpuminer-multi with heavy optimizations/rewrites and removin
 * Support for backup (failover) mining server.
 * keepalived support.
 * Command line options compatible with cpuminer.
-* CryptoNight-Lite support for AEON.
-* Smart automatic [CPU configuration](https://github.com/xmrig/xmrig/wiki/Threads).
-* Nicehash support
+* Smart automatic [CPU configuration](https://github.com/xtlrig/xtlrig/wiki/Threads).
 * It's open source software.
 
 ## Download
-* Binary releases: https://github.com/xmrig/xmrig/releases
-* Git tree: https://github.com/xmrig/xmrig.git
-  * Clone with `git clone https://github.com/xmrig/xmrig.git` :hammer: [Build instructions](https://github.com/xmrig/xmrig/wiki/Build).
+* Binary releases: https://github.com/xtlrig/xtlrig/releases
+* Git tree: https://github.com/xtlrig/xtlrig.git
+  * Clone with `git clone https://github.com/xtlrig/xtlrig.git`.
 
 ## Usage
-### Basic example
-```
-xmrig.exe -o pool.monero.hashvault.pro:5555 -u YOUR_WALLET -p x -k
-```
-
-### Failover
-```
-xmrig.exe -o pool.monero.hashvault.pro:5555 -u YOUR_WALLET1 -p x -k -o pool.supportxmr.com:5555 -u YOUR_WALLET2 -p x -k
-```
-For failover you can add multiple pools, maximum count not limited.
+Use [config.xtlrig.com](https://config.xtlrig.com/xtlrig) to generate, edit or share configurations.
 
 ### Options
 ```
@@ -64,14 +50,16 @@ For failover you can add multiple pools, maximum count not limited.
       --cpu-priority       set process priority (0 idle, 2 normal to 5 highest)
       --no-huge-pages      disable huge pages support
       --no-color           disable colored output
+      --variant            algorithm PoW variant
       --donate-level=N     donate level, default 5% (5 minutes in 100 minutes)
       --user-agent         set custom user-agent string for pool
   -B, --background         run the miner in the background
   -c, --config=FILE        load a JSON-format configuration file
   -l, --log-file=FILE      log all output to a file
+  -S, --syslog             use system log for output messages
       --max-cpu-usage=N    maximum CPU usage for automatic threads mode (default 75)
       --safe               safe adjust threads and av settings for current CPU
-      --nicehash           enable nicehash/xmrig-proxy support
+      --nicehash           enable nicehash/xtlrig-proxy support
       --print-time=N       print hashrate report every N seconds
       --api-port=N         port for the miner API
       --api-access-token=T access token for API
@@ -91,13 +79,13 @@ Since version 0.8.0.
 
 ## Common Issues
 ### HUGE PAGES unavailable
-* Run XMRig as Administrator.
-* Since version 0.8.0 XMRig automatically enables SeLockMemoryPrivilege for current user, but reboot or sign out still required. [Manual instruction](https://msdn.microsoft.com/en-gb/library/ms190730.aspx).
+* Run XTLRig as Administrator.
+* Since version 0.8.0 XTLRig automatically enables SeLockMemoryPrivilege for current user, but reboot or sign out still required. [Manual instruction](https://msdn.microsoft.com/en-gb/library/ms190730.aspx).
 
 ## Other information
 * No HTTP support, only stratum protocol support.
 * No TLS support.
-* Default donation 5% (5 minutes in 100 minutes) can be reduced to 1% via command line option `--donate-level`.
+* Default donation 5% (5 minutes in 100 minutes) can be reduced to 1% via command line option `--donate-level`, a portion of the donated mining power will go to @xmrig who is the creator of xmrig.
 
 
 ### CPU mining performance
@@ -118,5 +106,10 @@ Please note performance is highly dependent on system load. The numbers above ar
 * BTC: `1P7ujsXeX7GxQwHNnJsRMgAdNkFZmNVqJT`
 
 ## Contacts
-* support@xmrig.com
-* [reddit](https://www.reddit.com/user/XMRig/)
+* support@stellite.cash
+* [reddit](https://www.reddit.com/r/stellite)
+
+## Copyrights
+
+Copyright 2016-2018 XMRig                     <https://github.com/xmrig>, <support@xmrig.com>
+
