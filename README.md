@@ -9,7 +9,6 @@ XTLandRig is a high performance Stellite (XTL) CPU miner, with official support 
 * [Download](#download)
 * [Usage](#usage)
 * [Algorithm variations](#algorithm-variations)
-* [Common Issues](#common-issues)
 * [Other information](#other-information)
 * [Donations](#donations)
 * [Release checksums](#release-checksums)
@@ -17,13 +16,13 @@ XTLandRig is a high performance Stellite (XTL) CPU miner, with official support 
 
 ## Features
 * High performance.
-* Official Windows support.
-* Small Windows executable, without dependencies.
-* x86/x64 support.
+* Official Android support.
+* Small Android executable, without dependencies.
+* Armv7/Armv8 support.
 * Support for backup (failover) mining server.
 * keepalived support.
 * Command line options compatible with cpuminer.
-* Smart automatic [CPU configuration](https://github.com/xtlrig/xtlrig/wiki/Threads).
+* Smart automatic CPU configuration.
 * It's open source software.
 
 ## Download
@@ -73,22 +72,6 @@ Since version 0.8.0.
 * `--av=3` Software AES implementation.
 * `--av=4` Lower power mode (double hash) of `3`.
 
-## Common Issues
-### HUGE PAGES unavailable
-* Run XTLRig as Administrator.
-* Since version 0.8.0 XTLRig automatically enables SeLockMemoryPrivilege for current user, but reboot or sign out still required. [Manual instruction](https://msdn.microsoft.com/en-gb/library/ms190730.aspx).
-
-## Other information
-* No HTTP support, only stratum protocol support.
-* No TLS support.
-* Default donation 5% (5 minutes in 100 minutes) can be reduced to 1% via command line option `--donate-level`, a portion of the donated mining power will go to @xmrig who is the creator of xmrig.
-
-
-### CPU mining performance
-* **Intel i7-7700** - 307 H/s (4 threads)
-* **AMD Ryzen 7 1700X** - 560 H/s (8 threads)
-
-Please note performance is highly dependent on system load. The numbers above are obtained on an idle system. Tasks heavily using a processor cache, such as video playback, can greatly degrade hashrate. Optimal number of threads depends on the size of the L3 cache of a processor, 1 thread requires 2 MB of cache.
 
 ### Maximum performance checklist
 * Idle operating system.
