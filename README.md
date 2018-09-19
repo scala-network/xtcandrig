@@ -1,6 +1,6 @@
-# XTLRig
+# XTLAndRig
 
-XTLRig is a high performance Stellite (XTL) CPU miner, with official support for Windows.
+XTLAndRig is a high performance Stellite (XTL) CPU miner, with official support for Android.
 
 <img src="https://i.imgur.com/MIAgTEd.png" width="619" >
 
@@ -27,16 +27,12 @@ XTLRig is a high performance Stellite (XTL) CPU miner, with official support for
 * It's open source software.
 
 ## Download
-* Binary releases: https://github.com/xtlrig/xtlrig/releases
-* Git tree: https://github.com/xtlrig/xtlrig.git
-  * Clone with `git clone https://github.com/xtlrig/xtlrig.git`.
-
-## Usage
-Use [config.xtlrig.com](https://config.xtlrig.com/xtlrig) to generate, edit or share configurations.
+* Binary releases: https://github.com/stellitecoin/xtlandrig/releases
+* Git tree: https://github.com/stellitecoin/xtlandrig.git
+  * Clone with `git clone https://github.com/stellitecoin/xtlandrig.git`.
 
 ### Options
 ```
-  -a, --algo=ALGO          cryptonight (default) or cryptonight-lite
   -o, --url=URL            URL of mining server
   -O, --userpass=U:P       username:password pair for mining server
   -u, --user=USERNAME      username for mining server
@@ -112,4 +108,4 @@ Please note performance is highly dependent on system load. The numbers above ar
 ## Copyrights
 
 Copyright 2016-2018 XMRig                     <https://github.com/xmrig>, <support@xmrig.com>
-
+Copyright 2018 StelliteCoin                     <https://github.com/stellitecoin>, <support@stellitecoin.com>
