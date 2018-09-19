@@ -62,6 +62,9 @@ ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
 else ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
     LOCAL_CFLAGS   += -march=armv8-a
     LOCAL_CPPFLAGS += -march=armv8-a
+else ifeq ($(TARGET_ARCH_ABI),x86)
+    LOCAL_CFLAGS   +=  -maes
+    LOCAL_CPPFLAGS +=  -maes
 endif
 
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
@@ -72,6 +75,9 @@ else ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
     LOCAL_CFLAGS += -DXMRIG_ARMv8 -DXMRIG_ARMv7 -DXMRIG_ARM
     LOCAL_LDLIBS +=  -luv_armv8
     LOCAL_SRC_FILES += $(XMRIG_SRC_PATH)/src/Cpu_arm.cpp
+else ifeq ($(TARGET_ARCH_ABI), x86)
+    LOCAL_CFLAGS += -DRAPIDJSON_SSE2
+    LOCAL_LDLIBS +=  -luv_x86
 endif
 
 LOCAL_LDFLAGS += -L$(LOCAL_PATH)/../deps/libuv/lib
