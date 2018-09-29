@@ -1,6 +1,6 @@
 # XTLandRig
 
-XTLandRig is a high performance Stellite (XTL) CPU miner, with official support for Android.
+XTLAndRig is a high performance Stellite (XTL) CPU miner for Android.
 
 <img src="https://i.imgur.com/MIAgTEd.png" width="619" >
 
@@ -15,10 +15,10 @@ XTLandRig is a high performance Stellite (XTL) CPU miner, with official support 
 * [Contacts](#contacts)
 
 ## Features
-* High performance.
-* Official Android support.
+* Android support.
 * Small Android executable, without dependencies.
 * Armv7/Armv8 support.
+* Android 4.4 KitKat Support, for latest we recommend [Xtlrig](https://github.com/stellitecoin/xtlrig)
 * Support for backup (failover) mining server.
 * keepalived support.
 * Command line options compatible with cpuminer.
@@ -66,7 +66,6 @@ XTLandRig is a high performance Stellite (XTL) CPU miner, with official support 
 Also you can use configuration via config file, default **config.json**. You can load multiple config files and combine it with command line options.
 
 ## Algorithm variations
-Since version 0.8.0.
 * `--av=1` For CPUs with hardware AES.
 * `--av=2` Lower power mode (double hash) of `1`.
 * `--av=3` Software AES implementation.
@@ -76,7 +75,6 @@ Since version 0.8.0.
 ### Maximum performance checklist
 * Idle operating system.
 * Do not exceed optimal thread count.
-* Use modern CPUs with AES-NI instruction set.
 * Try setup optimal cpu affinity.
 * Enable fast memory (Large/Huge pages).
 
