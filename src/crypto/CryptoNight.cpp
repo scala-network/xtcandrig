@@ -5,6 +5,8 @@
  * Copyright 2014-2016 Wolf9466    <https://github.com/OhGodAPet>
  * Copyright 2016      Jay D Dee   <jayddee246@gmail.com>
  * Copyright 2016-2017 XMRig       <support@xmrig.com>
+ * Copyright 2018      Sebastian Stolzenberg <https://github.com/sebastianstolzenberg>
+ * Copyright 2018      BenDroid    <ben@graef.in>
  *
  *
  *   This program is free software: you can redistribute it and/or modify
@@ -21,102 +23,109 @@
  *   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include "crypto/CryptoNight.h"
 
-#if defined(XMRIG_ARM)
-#   include "crypto/CryptoNight_arm.h"
-#else
-#   include "crypto/CryptoNight_x86.h"
-#endif
+#include "crypto/CryptoNight_arm.h"
 
 #include "crypto/CryptoNight_test.h"
-#include "net/Job.h"
-#include "net/JobResult.h"
-#include "Options.h"
 
-
-void (*cryptonight_hash_ctx)(const uint8_t *input, size_t size, void *output, cryptonight_ctx *ctx) = nullptr;
-
-
-static void cryptonight_av1_aesni(const uint8_t *input, size_t size, void *output, struct cryptonight_ctx *ctx) {
-//#   if !defined(XMRIG_ARMv7)
-    cryptonight_hash<0x80000, MEMORY, 0x1FFFF0, false>(input, size, output, ctx);
-//#   endif
+template <size_t NUM_HASH_BLOCKS>
+static void cryptonight_aesni(AsmOptimization asmOptimization, PowVariant powVersion, const uint8_t* input, size_t size, uint8_t* output, ScratchPad** scratchPad) {
+    CryptoNightMultiHash<0x40000, POW_DEFAULT_INDEX_SHIFT, MEMORY, 0x1FFFF0, false, NUM_HASH_BLOCKS>::hashPowV3(input, size, output, scratchPad);
 }
 
-
-static void cryptonight_av2_aesni_double(const uint8_t *input, size_t size, void *output, cryptonight_ctx *ctx) {
-//#   if !defined(XMRIG_ARMv7)
-    cryptonight_double_hash<0x80000, MEMORY, 0x1FFFF0, false>(input, size, output, ctx);
-//#   endif
+template <size_t NUM_HASH_BLOCKS>
+static void cryptonight_softaes(const uint8_t* input, size_t size, uint8_t* output, ScratchPad** scratchPad) {
+    CryptoNightMultiHash<0x40000, POW_DEFAULT_INDEX_SHIFT, MEMORY, 0x1FFFF0, false, NUM_HASH_BLOCKS>::hashPowV3(input, size, output, scratchPad);
 }
 
+void (*cryptonight_hash_ctx[MAX_NUM_HASH_BLOCKS])(const uint8_t* input, size_t size, uint8_t* output, ScratchPad** scratchPad);
 
-static void cryptonight_av3_softaes(const uint8_t *input, size_t size, void *output, cryptonight_ctx *ctx) {
-    cryptonight_hash<0x80000, MEMORY, 0x1FFFF0, true>(input, size, output, ctx);
+template <size_t HASH_FACTOR>
+void setCryptoNightHashMethods(bool aesni)
+{
+     if (aesni) {
+        cryptonight_hash_ctx[HASH_FACTOR - 1] = cryptonight_aesni<HASH_FACTOR>;
+    } else {
+        cryptonight_hash_ctx[HASH_FACTOR - 1] = cryptonight_softaes<HASH_FACTOR>;
+    }
+    // next iteration
+    setCryptoNightHashMethods<HASH_FACTOR-1>(aesni);
 }
 
-
-static void cryptonight_av4_softaes_double(const uint8_t *input, size_t size, void *output, cryptonight_ctx *ctx) {
-    cryptonight_double_hash<0x80000, MEMORY, 0x1FFFF0, true>(input, size, output, ctx);
-}
-
-
-void (*cryptonight_variations[4])(const uint8_t *input, size_t size, void *output, cryptonight_ctx *ctx) = {
-    cryptonight_av1_aesni,
-    cryptonight_av2_aesni_double,
-    cryptonight_av3_softaes,
-    cryptonight_av4_softaes_double
+template <>
+void setCryptoNightHashMethods<0>(bool aesni)
+{
+    // template recursion abort
 };
 
-
-bool CryptoNight::hash(const Job &job, JobResult &result, cryptonight_ctx *ctx)
+bool CryptoNight::init(bool aesni)
 {
-    cryptonight_hash_ctx(job.blob(), job.size(), result.result, ctx);
+    for (int i = 0; i < 256; ++i)
+    {
+        const uint64_t index = (((i >> POW_DEFAULT_INDEX_SHIFT) & 6) | (i & 1)) << 1;
+        const uint64_t index_xtl = (((i >> POW_XLT_V4_INDEX_SHIFT) & 6) | (i & 1)) << 1;
 
-    return *reinterpret_cast<uint64_t*>(result.result + 24) < job.target();
+        variant1_table[i] = i ^ ((0x75310 >> index) & 0x30);
+        variant_xtl_table[i] = i ^ ((0x75310 >> index_xtl) & 0x30);
+    }
+
+    setCryptoNightHashMethods<MAX_NUM_HASH_BLOCKS>(aesni);
+    return selfTest(algo);
 }
 
-
-bool CryptoNight::init(int variant)
+void CryptoNight::hash(const uint8_t* input, size_t size, uint8_t* output, ScratchPad** scratchPad)
 {
-    if (variant < 1 || variant > 4) {
+    cryptonight_hash_ctx[factor-1](input, size, output, scratchPad);
+}
+
+bool CryptoNight::selfTest()
+{
+    if (cryptonight_hash_ctx[0] == nullptr
+    #if MAX_NUM_HASH_BLOCKS > 1
+        || cryptonight_hash_ctx[1] == nullptr
+    #endif
+    #if MAX_NUM_HASH_BLOCKS > 2
+        || cryptonight_hash_ctx[2] == nullptr
+    #endif
+    #if MAX_NUM_HASH_BLOCKS > 3
+        || cryptonight_hash_ctx[3] == nullptr
+    #endif
+    #if MAX_NUM_HASH_BLOCKS > 4
+        || cryptonight_hash_ctx[4] == nullptr
+    #endif
+    )
+    {
         return false;
     }
 
+    uint8_t output[160];
 
-    const int index = variant - 1;
+    ScratchPad* scratchPads [MAX_NUM_HASH_BLOCKS];
 
+    for (size_t i = 0; i < MAX_NUM_HASH_BLOCKS; ++i) {
+        ScratchPad* scratchPad = static_cast<ScratchPad *>(_mm_malloc(sizeof(ScratchPad), 4096));
+        scratchPad->memory     = (uint8_t *) _mm_malloc(MEMORY * 6, 16);
 
-    cryptonight_hash_ctx = cryptonight_variations[index];
-
-    return selfTest();
-}
-
-
-void CryptoNight::hash(const uint8_t *input, size_t size, uint8_t *output, cryptonight_ctx *ctx)
-{
-    cryptonight_hash_ctx(input, size, output, ctx);
-}
-
-
-bool CryptoNight::selfTest() {
-    if (cryptonight_hash_ctx == nullptr) {
-        return false;
+        scratchPads[i] = scratchPad;
     }
 
-    char output[64];
+    bool result = true;
 
-    struct cryptonight_ctx *ctx = (struct cryptonight_ctx*) _mm_malloc(sizeof(struct cryptonight_ctx), 16);
-    ctx->memory = (uint8_t *) _mm_malloc(MEMORY * 2, 16);
+    // cnv8 + xtl aka cn-fast2
 
-    cryptonight_hash_ctx(test_input, 76, output, ctx);
+    cryptonight_hash_ctx[0](test_input, 76, output, scratchPads);
+    result = result && memcmp(output, test_output_xtl_v9, 32) == 0;
 
-    _mm_free(ctx->memory);
-    _mm_free(ctx);
+    #if MAX_NUM_HASH_BLOCKS > 1
+    cryptonight_hash_ctx[1](test_input, 76, output, scratchPads);
+    result = result && memcmp(output, test_output_xtl_v9, 64) == 0;
+    #endif
 
+    for (size_t i = 0; i < MAX_NUM_HASH_BLOCKS; ++i) {
+        _mm_free(scratchPads[i]->memory);
+        _mm_free(scratchPads[i]);
+    }
 
-    return memcmp(output, test_output0, (Options::i()->doubleHash() ? 64 : 32)) == 0;
-
+    return result;
 }

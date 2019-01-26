@@ -28,33 +28,43 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "Options.h"
 
-#include "align.h"
+#define MEMORY       2097152 /* 2 MiB */
+#define MEMORY_LITE  1048576 /* 1 MiB */
+#define MEMORY_SUPER_LITE  524288 /* 512 KiB */
+#define MEMORY_ULTRA_LITE  262144 /* 256 KiB */
+#define MEMORY_HEAVY 4194304 /* 4 MiB */
+
+#define POW_DEFAULT_INDEX_SHIFT 3
+#define POW_XLT_V4_INDEX_SHIFT 4
 
 
-#define MEMORY      2097152 /* 2 MiB */
+struct ScratchPad {
+    alignas(16) uint8_t state[224]; // 224 instead of 200 to maintain aligned to 16 byte boundaries
+    alignas(16) uint8_t* memory;
 
-
-struct cryptonight_ctx {
-    VAR_ALIGN(16, uint8_t state0[200]);
-    VAR_ALIGN(16, uint8_t state1[200]);
-    VAR_ALIGN(16, uint8_t* memory);
+    // Additional stuff for asm impl
+    uint8_t ctx_info[24];
+    const void* input;
+    uint8_t* variant_table;
+    const uint32_t* t_fn;
 };
 
+alignas(64) static uint8_t variant1_table[256];
+alignas(64) static uint8_t variant_xtl_table[256];
 
 class Job;
 class JobResult;
 
-
 class CryptoNight
 {
 public:
-    static bool hash(const Job &job, JobResult &result, cryptonight_ctx *ctx);
-    static bool init(int variant);
-    static void hash(const uint8_t *input, size_t size, uint8_t *output, cryptonight_ctx *ctx);
+    static bool init(bool aesni);
+    static void hash(const uint8_t *input, size_t size, void *output, ScratchPad **ctx);
+
+public:
 
 private:
     static bool selfTest();
 };
-
-#endif /* __CRYPTONIGHT_H__ */
