@@ -30,7 +30,7 @@
 #include "crypto/CryptoNight_test.h"
 
 template <size_t NUM_HASH_BLOCKS>
-static void cryptonight_aesni(AsmOptimization asmOptimization, PowVariant powVersion, const uint8_t* input, size_t size, uint8_t* output, ScratchPad** scratchPad) {
+static void cryptonight_aesni(const uint8_t* input, size_t size, uint8_t* output, ScratchPad** scratchPad) {
     CryptoNightMultiHash<0x40000, POW_DEFAULT_INDEX_SHIFT, MEMORY, 0x1FFFF0, false, NUM_HASH_BLOCKS>::hashPowV3(input, size, output, scratchPad);
 }
 
